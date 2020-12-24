@@ -3,11 +3,11 @@
 This is an Intcode interpreter that runs on an Arduino.
 The code was developed on an Arduino Uno with an ATmega328P microcontroller.
 
-The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](##intcode-language-specifications) below.
+The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](#intcode-language-specifications) below.
 
 ## Installation
 
-The software consists of two parts: On the one hand, the actual Intcode interpreter, which runs on the Arduino. On the other hand, a control and memory unit in form of a Python script. See [Implementation Details](##implementation-details) below for more information.
+The software consists of two parts: On the one hand, the actual Intcode interpreter, which runs on the Arduino. On the other hand, a control and memory unit in form of a Python script. See [Implementation Details](#implementation-details) below for more information.
 
 ### Arduino
 
@@ -23,7 +23,7 @@ After the software is running on the Arduino, the Python script can be started.
 
 ## Implementation Details
 
-The Arduino does not have enough SRAM to hold a large Intcode program completely in memory. For example, the program of the 19 Dec 2019 has 300 int64's, resulting in a total of 5829 bytes.
+The Arduino does not have enough SRAM to hold a large Intcode program completely in memory. For example, the program of [Day 19 of Advent of Code 2019](https://adventofcode.com/2019/day/9) has 300 int64's, resulting in a total of 5829 bytes.
 
 That is why a Python script acts as an external storage medium. It loads an intcode program from a file. The Arduino can then communicate with the Python script via the serial interface:
 
@@ -43,13 +43,12 @@ Python: (No response, but prints value to stdout)
 
 At 9600 baud, I achieve a performance of breathtaking 10 instructions per second with my Arduino Uno.
 
-In the second part of 19 December 2019, about 370000 instructions have to be executed. This results in a computing time of over 10 hours 🎉
-
+In the second part of [Day 19 from Advent of Code 2019](https://adventofcode.com/2019/day/9), about 370000 instructions have to be executed for completing the task. This results in a computing time of over 10 hours 🎉.
 
 ## Intcode Language Specifications
 
 The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019).
-The characteristic of the language is that it consists only of integers. An instruction consists of an [opcode](###opcodes) and the following arguments
+The characteristic of the language is that it only consists of integers. An instruction consists of an operation code, or [opcode](#opcodes) for short, and rguments. The number of arguments depends on the opcode.
 
 ### Opcodes
 
