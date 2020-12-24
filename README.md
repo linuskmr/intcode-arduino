@@ -3,7 +3,7 @@
 This is an Intcode interpreter that runs on an Arduino.
 The code was developed on an Arduino Uno with an ATmega328P microcontroller.
 
-The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](#intcode-language-specifications) below.
+The Intcode programming language was created in the [Advent of Code 2019](https://www.adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](#intcode-language-specifications) below.
 
 ## Installation
 
