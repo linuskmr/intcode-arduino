@@ -1,11 +1,18 @@
+#!/usr/bin/env python3.8
+
 import sys
 from time import time
 import serial
 from typing import List
+import argparse
 
-port = '/dev/ttyACM0'
+parser = argparse.ArgumentParser(description='Intocode controller')
+parser.add_argument('-port', type=str, help='The port to connect to the arduino', default='/dev/ttyACM0')
+parser.add_argument('-baud', type=int, help='The baud rate to connect to the arduino', default='9600')
+parser.add_argument('file', type=str, help='Path to program, which should be executed')
+args = parser.parse_args()
 
-ard = serial.Serial(port, 9600, timeout=5)
+ard = serial.Serial(args.port, args.baud, timeout=5)
 
 
 def debug(*args):
@@ -42,7 +49,7 @@ class Program(list):
             val = input("INPUT ")
             return val
         elif operation == "OUTPUT":
-            print('OUTPUT', *args)
+            print('OUTPUT', int(args[0]))
         elif operation == "HALT" or operation == "ERROR":
             print(*cmd)
             self.finish = True
@@ -51,7 +58,7 @@ class Program(list):
 
 
 fileContent = ''
-with open(sys.argv[1]) as file:
+with open(args.file) as file:
     fileContent = file.read()
 
 program = Program([int(x) for x in fileContent.split(',')])
