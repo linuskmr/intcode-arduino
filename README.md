@@ -1,6 +1,13 @@
 # intcode-arduino
 
+This is an Intcode interpreter that runs on an Arduino.
+The code was developed on an Arduino Uno with an ATmega328P microcontroller.
+
+The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](##intcode-language-specifications) below.
+
 ## Installation
+
+The software consists of two parts: On the one hand, the actual Intcode interpreter, which runs on the Arduino. On the other hand, a control and memory unit in form of a Python script. See [Implementation Details](##implementation-details) below for more information.
 
 ### Arduino
 
@@ -40,6 +47,9 @@ In the second part of 19 December 2019, about 370000 instructions have to be exe
 
 
 ## Intcode Language Specifications
+
+The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019).
+The characteristic of the language is that it consists only of integers. An instruction consists of an [opcode](###opcodes) and the following arguments
 
 ### Opcodes
 
