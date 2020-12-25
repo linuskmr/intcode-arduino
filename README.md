@@ -1,18 +1,61 @@
 # intcode-arduino
 
-# Usage
+This is an Intcode interpreter that runs on an Arduino.
+The code was developed on an Arduino Uno with an ATmega328P microcontroller.
 
-## Arduino
+The Intcode programming language was created in the [Advent of Code 2019](https://www.adventofcode.com/2019). For details on the language, see the [Intcode Language Specifications](#intcode-language-specifications) below.
 
-Copy the [`intcode.ino`](https://github.com/linus-k519/intcode-arduino/blob/main/intcode.ino) file into the [Arduino IDE](https://www.arduino.cc/en/software) and upload it to the Arduino via the `⇨` Button.
+## Installation
 
-```cpp
-long long x = 12345678901234LL;
-Serial.print((long) (x / 1000000000L % 1000000000L));
-Serial.println((long) (x % 1000000000L));
+The software consists of two parts: On the one hand, the actual Intcode interpreter, which runs on the Arduino. On the other hand, a control and memory unit in form of a Python script. See [Implementation Details](#implementation-details) below for more information.
+
+### Arduino
+
+Copy the [`intcode-arduino.ino`](https://github.com/linus-k519/intcode-arduino/blob/main/intcode-arduino.ino) file into the [Arduino IDE](https://www.arduino.cc/en/software) and upload it to the Arduino via the ➡️ button.
+
+### Python
+
+After the software is running on the Arduino, the Python script can be started.
+
+```bash
+./intcode-controller.py examples/day9_1.ic
 ```
 
+## Implementation Details
+
+The Arduino does not have enough SRAM to hold a large Intcode program completely in memory. For example, the program of [Day 9 of Advent of Code 2019](https://adventofcode.com/2019/day/9) has over 950x int64's, resulting in a total of 7.6 KB with the available memory on my Arduino being just 2KB.
+
+That is why a Python script acts as an external storage medium. It loads a program from a file on the computer (which hopefully has more than 7.6 KB of RAM 😉) and makes the integers available one by one via the serial interface. The Arduino can read or write the value of a memory address. In addition, the input and output instructions are passed via the serial interface and the Python script to the user.
+The commands that the Arduino and the computer use to communicate consist of a list of strings separated by spaces. The zeroth argument is the type of the command, followed by the corresponding arguments for that operation. Below are a few examples:
+
+```
+Arduino: GET <address>
+Python: <value>
+
+Arduino: SET <address> <value>
+Python: (No response)
+
+Arduino: INPUT
+Python: <value> (Asks user for input and responses with the value)
+
+Arduino: OUTPUT <value>
+Python: (No response, but prints value to stdout)
+
+Arduino: HALT
+Python: (No response, but ends the program)
+
+Arduino: INFO InstructionCountCurrent 42
+Python: (No response, but prints it to stdout)
+```
+
+At a baud rate of 115200, I achieve a performance of breathtaking 37 instructions per second with my Arduino Uno.
+
+In the second part of [Day 9 from Advent of Code 2019](https://adventofcode.com/2019/day/9) over 370000 instructions have to be executed for completing the task. This results in a computing time of just under 3 hours 🎉.
+
 ## Intcode Language Specifications
+
+The Intcode programming language was created in the [Advent of Code 2019](adventofcode.com/2019).
+The characteristic of the language is that it only consists of integers. An instruction consists of an operation code, or [opcode](#opcodes) for short, and rguments. The number of arguments depends on the opcode.
 
 ### Opcodes
 
@@ -28,8 +71,6 @@ Serial.println((long) (x % 1000000000L));
 | 08     | 3      | Equals               | If the arg[0] == arg[1], sets arg[2] = 1. If not equal, sets it to 0 |
 | 09     | 1      | Add to relative base | relative base register += arg[0]                             |
 
-> From [esolangs.org/wiki/Intcode](https://esolangs.org/wiki/Intcode)
-
 ### Parameter Modes
 
 | Mode | Name           | Description                                                  |
@@ -37,9 +78,6 @@ Serial.println((long) (x % 1000000000L));
 | 0    | Position Mode  | The parameter is the address of the value.                   |
 | 1    | Immediate Mode | The parameter is the value itself (Not used for writing).    |
 | 2    | Relative Mode  | The parameter is added to the relative base register, which results in the memory address of the value. |
-
-> From [esolangs.org/wiki/Intcode](https://esolangs.org/wiki/Intcode)
-
 
 ```bash
 ABCDE
@@ -51,6 +89,4 @@ DE - two-digit opcode,      02 == opcode 2
  A - mode of 3rd parameter,  0 == position mode,
                                   omitted due to being a leading zero
 ```
-
 > From [adventofcode.com/2019/day/5](https://adventofcode.com/2019/day/5)
-
