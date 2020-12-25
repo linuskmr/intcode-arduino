@@ -6,9 +6,9 @@ import serial
 from typing import List
 import argparse
 
-parser = argparse.ArgumentParser(description='Intocode controller')
+parser = argparse.ArgumentParser(description='Intcode controller')
 parser.add_argument('-port', type=str, help='The port to connect to the arduino', default='/dev/ttyACM0')
-parser.add_argument('-baud', type=int, help='The baud rate to connect to the arduino', default='9600')
+parser.add_argument('-baud', type=int, help='The baud rate to connect to the arduino', default=115200)
 parser.add_argument('file', type=str, help='Path to program, which should be executed')
 args = parser.parse_args()
 
@@ -16,10 +16,9 @@ ard = serial.Serial(args.port, args.baud, timeout=5)
 
 
 def debug(*args):
-    # print('\033[34m', end='')
-    # print(*args, end='')
-    # print('\033[0m')
-    pass
+    print('\033[34m', end='')
+    print(*args, end='')
+    print('\033[0m')
 
 
 class Program(list):
@@ -40,10 +39,8 @@ class Program(list):
         args = cmd[1:]
         if operation == "GET":
             val = self[int(args[0])]
-            debug(f'GET[{int(args[0])}] = {val}')
             return val
         elif operation == "SET":
-            debug(f'SET[{int(args[0])}] = {int(args[1])}')
             self[int(args[0])] = int(args[1])
         elif operation == "INPUT":
             val = input("INPUT ")
