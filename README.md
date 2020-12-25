@@ -23,9 +23,10 @@ After the software is running on the Arduino, the Python script can be started.
 
 ## Implementation Details
 
-The Arduino does not have enough SRAM to hold a large Intcode program completely in memory. For example, the program of [Day 19 of Advent of Code 2019](https://adventofcode.com/2019/day/9) has 300 int64's, resulting in a total of 5829 bytes.
+The Arduino does not have enough SRAM to hold a large Intcode program completely in memory. For example, the program of [Day 9 of Advent of Code 2019](https://adventofcode.com/2019/day/9) has over 950x int64's, resulting in a total of 7.6 KB with the available memory on my Arduino being just 2KB.
 
-That is why a Python script acts as an external storage medium. It loads an intcode program from a file. The Arduino can then communicate with the Python script via the serial interface:
+That is why a Python script acts as an external storage medium. It loads a program from a file on the computer (which hopefully has more than 7.6 KB of RAM 😉) and makes the integers available one by one via the serial interface. The Arduino can read or write the value of a memory address. In addition, the input and output instructions are passed via the serial interface and the Python script to the user.
+The commands that the Arduino and the computer use to communicate consist of a list of strings separated by spaces. The zeroth argument is the type of the command, followed by the corresponding arguments for that operation. Below are a few examples:
 
 ```
 Arduino: GET <address>
@@ -39,11 +40,17 @@ Python: <value> (Asks user for input and responses with the value)
 
 Arduino: OUTPUT <value>
 Python: (No response, but prints value to stdout)
+
+Arduino: HALT
+Python: (No response, but ends the program)
+
+Arduino: INFO InstructionCountCurrent 42
+Python: (No response, but prints it to stdout)
 ```
 
-At 9600 baud, I achieve a performance of breathtaking 10 instructions per second with my Arduino Uno.
+At a baud rate of 115200, I achieve a performance of breathtaking 37 instructions per second with my Arduino Uno.
 
-In the second part of [Day 19 from Advent of Code 2019](https://adventofcode.com/2019/day/9), about 370000 instructions have to be executed for completing the task. This results in a computing time of over 10 hours 🎉.
+In the second part of [Day 9 from Advent of Code 2019](https://adventofcode.com/2019/day/9) over 370000 instructions have to be executed for completing the task. This results in a computing time of just under 3 hours 🎉.
 
 ## Intcode Language Specifications
 
