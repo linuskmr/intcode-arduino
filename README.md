@@ -111,10 +111,10 @@ This program adds 5 and 8 and outputs the result.
 
 ```python
 # Addition (everything in immediate mode) from 5+8 and overwrite 42 with the result
-11101, 5, 8, 42,
+11101,5,8,42
 
 # Output (implicit position mode) from position 3, so the result of 5+8
-4, 3,
+4,3
 
 # End program
 99
