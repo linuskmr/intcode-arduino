@@ -4,7 +4,7 @@ void setup() {
 	// Start serial and wait for connection
 	Serial.begin(baudRate);
 	while (!Serial);
-	Serial.println("Listening\n");
+	Serial.println("INFO connection_established");
 }
 
 // Instruction pointer
@@ -126,8 +126,9 @@ void loop() {
 		ip += 1 + argNum;
 	}
 
-	if (instructCount % 0xFF == 0) {
-		info("InstructionCountCurrent " + String(instructCount));
+	if (instructCount % 100 == 0) {
+		// Print the current instruct count every 100 instructions to show that I am still alive
+		info("instruction_count_current " + String(instructCount));
 	}
 }
 // Returns the value of the given address in the program
@@ -172,37 +173,45 @@ void output(long long val) {
 	Serial.flush();
 }
 
+// Sends the final instructCount and halt to controller and resets ip and relBase.
 void halt() {
-	info("InstructionCountFinal " + String(instructCount));
+	info("instruct_count_final " + String(instructCount));
 	Serial.println("HALT");
 	Serial.flush();
 	ip = 0;
 	relBase = 0;
 }
 
+// Sends the message to the controller and calls halt().
 void error(String msg) {
 	Serial.print("ERROR ");
 	Serial.println(msg);
 	halt();
 }
 
+// Sends a info message to the controller.
 void info(String msg) {
 	Serial.print("INFO ");
 	Serial.println(msg);
 }
 
+// Prints a long long to the serial connection.
 void printLL(long long x) {
-	char buffer[100];
+	// Print sign
 	if (x < 0) {
 		Serial.print("-");
 	}
 	long long xPos = abs(x);
+
+	// Split long long into two longs and print them separately
+	char buffer[10];
 	sprintf(buffer, "%06ld", (long)(xPos/1000000L));
 	Serial.print(buffer);
 	sprintf(buffer, "%06ld", (long)(xPos%1000000L));
 	Serial.println(buffer);
 }
 
+// Reads a long long from the serial console.
 long long readLL() {
 	long long num = 0;
 	char sign = 1;
@@ -211,13 +220,17 @@ long long readLL() {
 		while (!Serial.available());
 		char c = Serial.read();
 		if (c == '\n') {
+			// Number finished
 			break;
 		} else if (c == '-') {
+			// Change sign to negative
 			sign = -1;
 		} else {
+			// Shift number one decimal place to the left
 			num *= 10;
-			num += sign * (c - '0');
+			// Convert ascii to number and add to num
+			num += c - '0';
 		}
 	}
-	return num;
+	return sign * num;
 }
