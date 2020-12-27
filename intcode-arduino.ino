@@ -174,7 +174,7 @@ void output(long long val) {
 
 void halt() {
 	info("InstructionCountFinal " + String(instructCount));
-	Serial.print("HALT ");
+	Serial.println("HALT");
 	Serial.flush();
 	ip = 0;
 	relBase = 0;

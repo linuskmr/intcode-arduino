@@ -1,0 +1,14 @@
+# Output value at position 42
+4,42
+
+# Increment value at position 42 by one
+1001,42,1,42
+
+# If (value at position 42) < 10, set value of position 43 to zero
+1007,42,10,43
+
+# Jump to begin of program, if value of position 43 is not-null
+1005,43,0
+
+# End program
+99
