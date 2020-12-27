@@ -42,83 +42,83 @@ void loop() {
 	byte argNum = argNums[opcode];
 
 	// Extract mode for each arg
-    byte modes[argNum];
+	byte modes[argNum];
 	long long modeVal = instruction / 100;
-    long powVal = 1;
-    for (int i = 0; i < argNum; i++) {
-        // Implicit mode 0 if not specified
-        modes[i] = (modeVal / powVal) % 10LL;
-        powVal *= 10;
-    }
+	long powVal = 1;
+	for (int i = 0; i < argNum; i++) {
+		// Implicit mode 0 if not specified
+		modes[i] = (modeVal / powVal) % 10LL;
+		powVal *= 10;
+	}
 
 	// ip points to the instruction and first arg is ip+1
 	int argAddr[argNum];
-    for (int i = 0; i < argNum; i++) {
-        int addr = ip + 1 + i;
-        switch (modes[i]) {
-            case 0:
-                // Position mode: The value is the position of the actual value
-                argAddr[i] = get(addr);
-                break;
-            case 1:
-                // Immediate mode: The parameter is the value itself
-                argAddr[i] = addr;
-                break;
-            case 2:
-                // Relative base mode: The value plus the relative
-                // base register is the position of the value
-                argAddr[i] = relBase + get(addr);
-                break;
-            default:
-                // Unknown mode
-                error("Unknown mode " + String(modes[i]));
-                return;
-        }
-    }
+	for (int i = 0; i < argNum; i++) {
+		int addr = ip + 1 + i;
+		switch (modes[i]) {
+			case 0:
+			// Position mode: The value is the position of the actual value
+			argAddr[i] = get(addr);
+			break;
+		case 1:
+			// Immediate mode: The parameter is the value itself
+			argAddr[i] = addr;
+			break;
+		case 2:
+			// Relative base mode: The value plus the relative
+			// base register is the position of the value
+			argAddr[i] = relBase + get(addr);
+			break;
+		default:
+			// Unknown mode
+			error("Unknown mode " + String(modes[i]));
+			return;
+		}
+	}
 
-    // moveIP indicates whether the instruction pointer should be moved
+	// moveIP indicates whether the instruction pointer should be moved
 	// after execution (for Jump operations this should not be done).
 	boolean moveIP = true;
 
 	// Execute instruction
 	switch (opcode) {
-        case 1: // Addition
-            set(argAddr[2], get(argAddr[0]) + get(argAddr[1]));
-            break;
-        case 2: // Multiplication
-            set(argAddr[2], get(argAddr[0]) * get(argAddr[1]));
-            break;
-        case 3: // Input
-            set(argAddr[0], input());
-            break;
-        case 4: // Output
-            output(get(argAddr[0]));
-            break;
-        case 5: // Jump non-zero
-            if (get(argAddr[0]) != 0) {
-                moveIP = false; // Don't move the instruction pointer
-                ip = get(argAddr[1]);
-            }
-            break;
-        case 6: // Jump zero
-            if (get(argAddr[0]) == 0) {
-                moveIP = false; // Don't move the instruction pointer
-                ip = get(argAddr[1]);
-            }
-            break;
-        case 7: // Less than
-            set(argAddr[2], boolToInt(get(argAddr[0]) < get(argAddr[1])));
-            break;
-        case 8: // Equals
-            set(argAddr[2], boolToInt(get(argAddr[0]) == get(argAddr[1])));
-            break;
-        case 9: // Change relative base
-            relBase += get(argAddr[0]);
-            break;
-        default: // Unknown opcode
-            String msg = "Unknown opcode " + String(opcode);
-            error(msg);
-            return;
+		case 1: // Addition
+			set(argAddr[2], get(argAddr[0]) + get(argAddr[1]));
+			break;
+		case 2: // Multiplication
+			set(argAddr[2], get(argAddr[0]) * get(argAddr[1]));
+			break;
+		case 3: // Input
+			set(argAddr[0], input());
+			break;
+		case 4: // Output
+			output(get(argAddr[0]));
+			break;
+		case 5: // Jump non-zero
+			if (get(argAddr[0]) != 0) {
+				moveIP = false; // Don't move the instruction pointer
+				ip = get(argAddr[1]);
+			}
+			break;
+		case 6: // Jump zero
+			if (get(argAddr[0]) == 0) {
+				moveIP = false; // Don't move the instruction pointer
+				ip = get(argAddr[1]);
+			}
+			break;
+		case 7: // Less than
+			set(argAddr[2], boolToInt(get(argAddr[0]) < get(argAddr[1])));
+			break;
+		case 8: // Equals
+			set(argAddr[2], boolToInt(get(argAddr[0]) == get(argAddr[1])));
+			break;
+		case 9: // Change relative base
+			relBase += get(argAddr[0]);
+			break;
+		default: // Unknown opcode
+			String msg = "Unknown opcode " + String(opcode);
+			error(msg);
+			return;
 	}
 
 	if (moveIP) {
@@ -131,6 +131,7 @@ void loop() {
 		info("instruction_count_current " + String(instructCount));
 	}
 }
+
 // Returns the value of the given address in the program
 // by querying the control program.
 long long get(int addr) {
