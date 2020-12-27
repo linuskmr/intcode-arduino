@@ -11,6 +11,11 @@ import re
 # exec().
 class Program(List[int]):
     finish = False
+    instructCount = 0
+
+    def __init__(self, values):
+        super().__init__(values)
+        self.start_time = time()
 
     @classmethod
     def from_text(cls, text: str):
@@ -30,6 +35,7 @@ class Program(List[int]):
         # Split numbers by comma and parse them to integers
         comma_separated = text.split(',')
         comma_separated_int = [int(x) for x in comma_separated]
+
         return cls(comma_separated_int)
 
     # Gets a value at the given position. The list grows if necessary to this index.
@@ -46,25 +52,38 @@ class Program(List[int]):
 
     # Executes a command from the arduino on this list.
     def exec(self, cmd: List[str]):
-        operation = cmd[0]
-        if operation == "GET":
+        if cmd[0] == 'GET':
             # Get the value at position
             return self[int(cmd[1])]
-        elif operation == "SET":
+        elif cmd[0] == 'SET':
             # Set the value at the position to the value
             self[int(cmd[1])] = int(cmd[2])
-        elif operation == "INPUT":
+        elif cmd[0] == 'INPUT':
             # Asks the user for an input
-            return input("INPUT ")
-        elif operation == "OUTPUT":
+            return input('INPUT ')
+        elif cmd[0] == 'OUTPUT':
             # Outputs a value from the arduino
             print('OUTPUT', int(cmd[1]))
-        elif operation == "HALT" or operation == "ERROR":
+        elif cmd[0] == 'HALT' or cmd[0] == 'ERROR':
             # Ends the execution of the program
             print(*cmd)
             self.finish = True
+        elif cmd[0] == 'INFO' and cmd[1] == 'instruct_count_final':
+            print(*cmd)
+            self.instructCount = int(cmd[2])
         else:
             print(*cmd)
+
+    def stats(self):
+        out = '\033[34mSTATS\n'
+        exec_time = time() - self.start_time
+        out += f'Execution took {exec_time:.2f}s\n'
+        ops_per_sec = self.instructCount / exec_time
+        out += f'{ops_per_sec:.2f} Operations/Second\n'
+        sec_per_op = exec_time / self.instructCount
+        out += f'{sec_per_op:.4f} Seconds/Operation'
+        out += '\033[0m'
+        return out
 
 
 if __name__ == '__main__':
@@ -95,5 +114,6 @@ if __name__ == '__main__':
             # Write return value from program.exec() to arduino
             arduino.write((str(data) + '\n').encode())
 
-    end_time = time()
-    print(f'Execution took {end_time - start_time:.2f}s')
+    print()
+    print(program.stats())
+
